@@ -3,3 +3,4 @@ example_repo:
     shared_secret: abc123!
     git_reset: True 
     git_delete_if_pull_failed: True
+    executing_user: puller

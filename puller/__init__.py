@@ -6,11 +6,19 @@ import logging
 import os
 import subprocess
 import uvicorn
+from shlex import join
 
 app = FastAPI()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+def command_preparation(command, user):
+    if user is None:
+        return command
+
+    return ["su", "-", user, "-c", join(command)]
 
 
 @app.post(path="/pull/{repo}")
@@ -40,20 +48,20 @@ async def pull(request: Request, repo: str):
 
     if repo_config.get("git_reset"):
         logging.info("Resetting the repository before pulling")
-        subprocess.run(["git", "reset", "--hard"])
+        subprocess.run(command_preparation(["git", "reset", "--hard"], repo_config.get("executing_user")))
 
-    pull_process = subprocess.run(["git", "pull"])
+    pull_process = subprocess.run(command_preparation(["git", "pull"], repo_config.get("executing_user")))
 
-    git_url_process = subprocess.run(
-        ["git", "config", "--get", "remote.origin.url"], capture_output=True
+    git_url_process = subprocess.run(command_preparation(
+        ["git", "config", "--get", "remote.origin.url"], repo_config.get("executing_user")), capture_output=True
     )
     git_url = git_url_process.stdout.decode("UTF-8").split("\n")[0]
     logging.info(f"Captured origin: {git_url}")
     os.chdir(path)
 
     if pull_process.returncode != 0 and repo_config.get("git_delete_if_pull_failed"):
-        subprocess.run(["rm", "-rf", repo_config["path"]])
-        subprocess.run(["git", "clone", git_url, repo_config["path"]])
+        subprocess.run(command_preparation(["rm", "-rf", repo_config["path"]], repo_config.get("executing_user")))
+        subprocess.run(command_preparation(["git", "clone", git_url, repo_config["path"]], repo_config.get("executing_user")))
         pass
 
     return {}

@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="puller",  # Replace with your own username
-    version="0.1.3",
+    version="0.2.0.dev1",
     author="Tim Dithmer",
     author_email="dith.tim@gmail.com",
     description="An automatic repo puller",
@@ -22,7 +22,7 @@ setuptools.setup(
     ],
     install_requires=["fastapi", "pyyaml", "uvicorn"],
     packages=setuptools.find_packages(),
-    python_requires=">=3.6",
+    python_requires=">=3.9",
     entry_points={  
         "console_scripts": [
             "puller=puller:start_server",
