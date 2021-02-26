@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="puller",  # Replace with your own username
-    version="0.2.0.dev1",
+    version="0.2.0.dev2",
     author="Tim Dithmer",
     author_email="dith.tim@gmail.com",
     description="An automatic repo puller",
