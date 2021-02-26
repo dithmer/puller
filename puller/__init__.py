@@ -6,7 +6,7 @@ import logging
 import os
 import subprocess
 import uvicorn
-from shlex import join
+from shellescape import quote
 
 app = FastAPI()
 
@@ -18,7 +18,7 @@ def command_preparation(command, user):
     if user is None:
         return command
 
-    return ["su", "-", user, "-c", join(command)]
+    return ["su", "-", user, "-c", quote(" ".join([quote(c) for c in command]))]
 
 
 @app.post(path="/pull/{repo}")

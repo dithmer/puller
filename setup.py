@@ -20,9 +20,9 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=["fastapi", "pyyaml", "uvicorn"],
+    install_requires=["fastapi", "pyyaml", "uvicorn", "shellescape"],
     packages=setuptools.find_packages(),
-    python_requires=">=3.9",
+    python_requires=">=3.6",
     entry_points={  
         "console_scripts": [
             "puller=puller:start_server",
