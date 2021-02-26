@@ -18,7 +18,7 @@ def command_preparation(command, user):
     if user is None:
         return command
 
-    return ["su", "-", user, "-c", quote(" ".join([quote(c) for c in command]))]
+    return ["su", "-", user, "-s", "/bin/bash", "-c", quote(" ".join([quote(c) for c in command]))]
 
 
 @app.post(path="/pull/{repo}")
