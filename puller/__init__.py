@@ -1,10 +1,11 @@
 import hmac
 from typing import Optional
 from fastapi import FastAPI, Request
-import config
+from .config import get_config
 import logging
 import os
 import subprocess
+import uvicorn
 
 app = FastAPI()
 
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @app.post(path="/pull/{repo}")
 async def pull(request: Request, repo: str):
-    c = config.get_config()
+    c = get_config()
 
     try:
         repo_config = c[repo]
@@ -56,3 +57,11 @@ async def pull(request: Request, repo: str):
         pass
 
     return {}
+
+def start_server():
+    try:
+        port = int(os.environ['PULLER_PORT'])
+    except:
+        port = 8000
+
+    uvicorn.run("puller:app", host="0.0.0.0", port=port, log_level="info")
