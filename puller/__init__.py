@@ -56,13 +56,17 @@ async def pull(request: Request, repo: str):
         ["git", "config", "--get", "remote.origin.url"], repo_config.get("executing_user")), capture_output=True
     )
     git_url = git_url_process.stdout.decode("UTF-8").split("\n")[0]
-    logging.info(f"Captured origin: {git_url}")
+
+    latest_git_log_process = subprocess.run(command_preparation(["git", "log", "-1", "--pretty=%B"]), capture_output=True)
+    subprocess.run(command_preparation(["wall", "Puller hat gepullt ({})".format(latest_git_log_process.stdout)]))
+
     os.chdir(path)
 
     if pull_process.returncode != 0 and repo_config.get("git_delete_if_pull_failed"):
         subprocess.run(command_preparation(["rm", "-rf", repo_config["path"]], repo_config.get("executing_user")))
         subprocess.run(command_preparation(["git", "clone", git_url, repo_config["path"]], repo_config.get("executing_user")))
         pass
+
 
     return {}
 
