@@ -57,8 +57,8 @@ async def pull(request: Request, repo: str):
     )
     git_url = git_url_process.stdout.decode("UTF-8").split("\n")[0]
 
-    latest_git_log_process = subprocess.run(command_preparation(["git", "log", "-1", "--pretty=%B"]), capture_output=True)
-    subprocess.run(command_preparation(["wall", "Puller hat gepullt ({})".format(latest_git_log_process.stdout)]))
+    latest_git_log_process = subprocess.run(command_preparation(["git", "log", "-1", "--pretty=%B"], repo_config.get("executing_user")), capture_output=True)
+    subprocess.run(command_preparation(["wall", "Puller hat gepullt ({})".format(latest_git_log_process.stdout)], repo_config.get("executing_user")))
 
     os.chdir(path)
 
