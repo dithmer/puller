@@ -75,7 +75,12 @@ async def pull(request: Request, repo: str):
     )
     subprocess.run(
         command_preparation(
-            ["wall", "Puller hat gepullt ({})".format(latest_git_log_process.stdout)],
+            [
+                "wall",
+                "Puller hat gepullt ({})".format(
+                    latest_git_log_process.stdout.decode("UTF-8").split("\n")[0]
+                ),
+            ],
             repo_config.get("executing_user"),
         )
     )
