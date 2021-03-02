@@ -48,31 +48,60 @@ async def pull(request: Request, repo: str):
 
     if repo_config.get("git_reset"):
         logging.info("Resetting the repository before pulling")
-        subprocess.run(command_preparation(["git", "reset", "--hard"], repo_config.get("executing_user")))
+        subprocess.run(
+            command_preparation(
+                ["git", "reset", "--hard"], repo_config.get("executing_user")
+            )
+        )
 
-    pull_process = subprocess.run(command_preparation(["git", "pull"], repo_config.get("executing_user")))
+    pull_process = subprocess.run(
+        command_preparation(["git", "pull"], repo_config.get("executing_user"))
+    )
 
-    git_url_process = subprocess.run(command_preparation(
-        ["git", "config", "--get", "remote.origin.url"], repo_config.get("executing_user")), capture_output=True
+    git_url_process = subprocess.run(
+        command_preparation(
+            ["git", "config", "--get", "remote.origin.url"],
+            repo_config.get("executing_user"),
+        ),
+        capture_output=True,
     )
     git_url = git_url_process.stdout.decode("UTF-8").split("\n")[0]
 
-    latest_git_log_process = subprocess.run(command_preparation(["git", "log", "-1", "--pretty=%B"], repo_config.get("executing_user")), capture_output=True)
-    subprocess.run(command_preparation(["wall", "Puller hat gepullt ({})".format(latest_git_log_process.stdout)], repo_config.get("executing_user")))
+    latest_git_log_process = subprocess.run(
+        command_preparation(
+            ["git", "log", "-1", "--pretty=%B"], repo_config.get("executing_user")
+        ),
+        capture_output=True,
+    )
+    subprocess.run(
+        command_preparation(
+            ["wall", "Puller hat gepullt ({})".format(latest_git_log_process.stdout)],
+            repo_config.get("executing_user"),
+        )
+    )
 
     os.chdir(path)
 
     if pull_process.returncode != 0 and repo_config.get("git_delete_if_pull_failed"):
-        subprocess.run(command_preparation(["rm", "-rf", repo_config["path"]], repo_config.get("executing_user")))
-        subprocess.run(command_preparation(["git", "clone", git_url, repo_config["path"]], repo_config.get("executing_user")))
+        subprocess.run(
+            command_preparation(
+                ["rm", "-rf", repo_config["path"]], repo_config.get("executing_user")
+            )
+        )
+        subprocess.run(
+            command_preparation(
+                ["git", "clone", git_url, repo_config["path"]],
+                repo_config.get("executing_user"),
+            )
+        )
         pass
-
 
     return {}
 
+
 def start_server():
     try:
-        port = int(os.environ['PULLER_PORT'])
+        port = int(os.environ["PULLER_PORT"])
     except:
         port = 8000
 
