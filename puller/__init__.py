@@ -77,6 +77,7 @@ async def pull(request: Request, repo: str):
         command_preparation(
             [
                 "wall",
+                "-n",
                 "Puller hat gepullt ({})".format(
                     latest_git_log_process.stdout.decode("UTF-8").split("\n")[0]
                 ),
