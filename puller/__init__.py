@@ -14,6 +14,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def run_hooks(repo_config, hook_type):
+    old_path = os.getcwd()
+    os.chdir(repo_config["path"])
+    for hook_file in repo_config.get("hooks", {}).get(hook_type, []):
+        subprocess.run(
+            command_preparation([hook_file], repo_config.get("executing_user"))
+        )
+    os.chdir(old_path)
+
+
 def command_preparation(command, user):
     if user is None:
         return command
@@ -67,24 +77,7 @@ async def pull(request: Request, repo: str):
     )
     git_url = git_url_process.stdout.decode("UTF-8").split("\n")[0]
 
-    latest_git_log_process = subprocess.run(
-        command_preparation(
-            ["git", "log", "-1", "--pretty=%B"], repo_config.get("executing_user")
-        ),
-        capture_output=True,
-    )
-    subprocess.run(
-        command_preparation(
-            [
-                "wall",
-                "-n",
-                "Puller hat gepullt ({})".format(
-                    latest_git_log_process.stdout.decode("UTF-8").split("\n")[0]
-                ),
-            ],
-            repo_config.get("executing_user"),
-        )
-    )
+    run_hooks(repo_config, "post_pull")
 
     os.chdir(path)
 
